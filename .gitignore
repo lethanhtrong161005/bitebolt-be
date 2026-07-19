@@ -83,9 +83,10 @@ redisdata/
 kafkadata/
 zookeeperdata/
 
-# Keep agents configuration directories (CRITICAL for platform agents logic)
-!/.agents/
-!/.agentCoding/
+# Ignore agents configuration directories
+.agents/
+.agentCoding/
+
 
 # Separate configuration repository
 eco-move-config/
