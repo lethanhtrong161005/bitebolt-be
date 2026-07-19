@@ -9,11 +9,19 @@ option java_multiple_files = true;
 // Service definition
 service UserGrpcService {
   rpc GetUserProfile (GetUserProfileRequest) returns (UserProfileResponse);
+  rpc CreateUserProfile (CreateUserProfileRequest) returns (UserProfileResponse);
 }
 
 // Request message
 message GetUserProfileRequest {
   string user_id = 1;
+}
+
+message CreateUserProfileRequest {
+  string user_id   = 1;
+  string full_name = 2;
+  string email     = 3;
+  string avatar    = 4;
 }
 
 // Response message

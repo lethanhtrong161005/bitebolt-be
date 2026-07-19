@@ -58,4 +58,24 @@ public class UserGrpcClient {
             throw new HttpException(503, AuthMessageConstant.ERROR_USER_SERVICE_UNAVAILABLE);
         }
     }
+
+    public UserProfileResponse createUserProfile(UUID userId, String fullName, String email, String avatar) {
+        log.info("Calling user-service via gRPC to create user profile for email: {}", email);
+        try {
+            com.ecomove.grpc.user.CreateUserProfileRequest request = com.ecomove.grpc.user.CreateUserProfileRequest.newBuilder()
+                    .setUserId(userId.toString())
+                    .setFullName(fullName != null ? fullName : "")
+                    .setEmail(email != null ? email : "")
+                    .setAvatar(avatar != null ? avatar : "")
+                    .build();
+
+            return userGrpcStub
+                    .withDeadlineAfter(3, TimeUnit.SECONDS)
+                    .createUserProfile(request);
+        } catch (StatusRuntimeException e) {
+            log.error("gRPC error occurred when creating user profile. Code: {}, Description: {}", 
+                    e.getStatus().getCode(), e.getStatus().getDescription(), e);
+            throw new HttpException(503, AuthMessageConstant.ERROR_USER_SERVICE_UNAVAILABLE);
+        }
+    }
 }
