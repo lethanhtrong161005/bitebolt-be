@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package ecomove.user;
+
+option java_package = "com.ecomove.grpc.user";
+option java_outer_classname = "UserServiceProto";
+option java_multiple_files = true;
+
+// Service definition
+service UserGrpcService {
+  rpc GetUserProfile (GetUserProfileRequest) returns (UserProfileResponse);
+}
+
+// Request message
+message GetUserProfileRequest {
+  string user_id = 1;
+}
+
+// Response message
+message UserProfileResponse {
+  string user_id   = 1;
+  string full_name = 2;
+  string email     = 3;
+  string avatar    = 4;
+}
