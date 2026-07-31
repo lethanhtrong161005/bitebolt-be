@@ -1,5 +1,5 @@
 # =========================================================================
-# EcoMove Backend .gitignore
+# BiteBolt Backend .gitignore
 # =========================================================================
 
 # Maven Build Target Directories
@@ -84,9 +84,8 @@ kafkadata/
 zookeeperdata/
 
 # Ignore agents configuration directories
-.agents/
 .agentCoding/
 
 
 # Separate configuration repository
-eco-move-config/
+bitebolt-config/

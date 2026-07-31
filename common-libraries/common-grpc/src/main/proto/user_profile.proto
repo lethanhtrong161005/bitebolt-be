@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package ecomove.user;
+package BiteBolt.user;
 
-option java_package = "com.ecomove.grpc.user";
+option java_package = "com.bitebolt.grpc.user";
 option java_outer_classname = "UserServiceProto";
 option java_multiple_files = true;
 

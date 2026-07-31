@@ -4,7 +4,7 @@ services:
 
   postgres-user:
     image: postgres:15-alpine
-    container_name: ecomove-postgres-user
+    container_name: BiteBolt-postgres-user
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: rootpassword
@@ -15,34 +15,34 @@ services:
       - postgres_user_data:/var/lib/postgresql/data
       - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
     networks:
-      - ecomove-network
+      - BiteBolt-network
     restart: unless-stopped
 
   redis:
     image: redis:7-alpine
-    container_name: ecomove-redis
+    container_name: BiteBolt-redis
     restart: unless-stopped
 
     ports:
       - "6379:6379"
 
     networks:
-      - ecomove-network
+      - BiteBolt-network
 
   redis-ui:
     image: redis/redisinsight:latest
-    container_name: ecomove-redis-ui
+    container_name: BiteBolt-redis-ui
     restart: unless-stopped
     ports:
       - "5540:5540"
     depends_on:
       - redis
     networks:
-      - ecomove-network
+      - BiteBolt-network
 
   kafka:
     image: apache/kafka:3.9.0
-    container_name: ecomove-kafka
+    container_name: BiteBolt-kafka
     restart: unless-stopped
 
     ports:
@@ -63,28 +63,28 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
 
     networks:
-      - ecomove-network
+      - BiteBolt-network
 
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
-    container_name: ecomove-kafka-ui
+    container_name: BiteBolt-kafka-ui
     restart: unless-stopped
 
     ports:
       - "8085:8080"
 
     environment:
-      KAFKA_CLUSTERS_0_NAME: eco-move
+      KAFKA_CLUSTERS_0_NAME: bitebolt
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
 
     depends_on:
       - kafka
 
     networks:
-      - ecomove-network
+      - BiteBolt-network
 
 networks:
-  ecomove-network:
+  BiteBolt-network:
     driver: bridge
 
 volumes:

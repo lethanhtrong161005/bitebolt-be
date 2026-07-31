@@ -12,7 +12,7 @@
         <relativePath/>
     </parent>
 
-    <groupId>com.ecomove</groupId>
+    <groupId>com.bitebolt</groupId>
     <artifactId>user-service</artifactId>
     <version>1.0.0</version>
 
@@ -44,6 +44,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.bitebolt</groupId>
+            <artifactId>common-security</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
 
         <!-- Validation -->
@@ -91,25 +97,25 @@
 
         <!-- Common Libraries -->
         <dependency>
-            <groupId>com.ecomove</groupId>
+            <groupId>com.bitebolt</groupId>
             <artifactId>common-dto</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
 
         <dependency>
-            <groupId>com.ecomove</groupId>
+            <groupId>com.bitebolt</groupId>
             <artifactId>common-exception</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
 
         <dependency>
-            <groupId>com.ecomove</groupId>
+            <groupId>com.bitebolt</groupId>
             <artifactId>common-logging</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
 
         <dependency>
-            <groupId>com.ecomove</groupId>
+            <groupId>com.bitebolt</groupId>
             <artifactId>common-validation</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
@@ -123,7 +129,7 @@
 
         <!-- Common gRPC stubs -->
         <dependency>
-            <groupId>com.ecomove</groupId>
+            <groupId>com.bitebolt</groupId>
             <artifactId>common-grpc</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>

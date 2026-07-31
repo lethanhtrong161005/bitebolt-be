@@ -15,7 +15,7 @@ INSERT INTO credentials (
   'e81bb380-4966-4194-a15d-4f1073860bb4', 
   '03560447291', 
   '$2a$10$xPCS4aD2ZBkwCoWCNU80neIwdAQEWtFxviYniXncuUQNxyMCD.xeO', 
-  'RIDER', 
+  'CUSTOMER', 
   'ACTIVE', 
   NOW(), 
   NOW(), 
