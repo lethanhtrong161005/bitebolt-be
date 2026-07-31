@@ -5,6 +5,7 @@
 # Maven Build Target Directories
 target/
 **/target/
+.idea
 
 # Java Class Files
 *.class
@@ -68,7 +69,8 @@ Desktop.ini
 # Project Specific Local Assets & Secrets
 # =========================================================================
 # Local environment configs (do not commit passwords/secrets)
-*.env
+.env
+.env.*
 *.local
 **/application-local.properties
 **/application-dev.properties
