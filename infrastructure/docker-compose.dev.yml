@@ -2,17 +2,19 @@ version: "3.9"
 
 services:
 
-  postgres-user:
+  postgres:
     image: postgres:15-alpine
-    container_name: BiteBolt-postgres-user
+    container_name: BiteBolt-postgres
+    env_file:
+      - ../.env.dev
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: rootpassword
+      POSTGRES_USER: ${SPRING_DATASOURCE_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${SPRING_DATASOURCE_PASSWORD:-rootpassword}
       POSTGRES_DB: user_db
     ports:
       - "5432:5432"
     volumes:
-      - postgres_user_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
       - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
     networks:
       - BiteBolt-network
@@ -88,4 +90,4 @@ networks:
     driver: bridge
 
 volumes:
-  postgres_user_data:
+  postgres_data:
