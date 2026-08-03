@@ -44,19 +44,19 @@ graph TD
 
 ### Module Structure
 * **`common-libraries/`**: Shared core packages.
-  * `common-dto`: Reusable data transfer objects, base models, API response envelopes, and system constants.
-  * `common-validation`: Custom annotation-driven validations (e.g. `@RequireField`).
-  * `common-exception`: Global Exception Handling (`GlobalExceptionHandler`) and HTTP exceptions.
-  * `common-logging`: Request logging interceptors and trace correlation utilities.
-  * `common-grpc`: Centralized gRPC proto files, stub generation settings, and metadata interceptors.
-  * `common-security`: Centralized JWT generation/validation (JwtProvider) and Cryptography utilities (CryptoUtils).
+    * `common-dto`: Reusable data transfer objects, base models, API response envelopes, and system constants.
+    * `common-validation`: Custom annotation-driven validations (e.g. `@RequireField`).
+    * `common-exception`: Global Exception Handling (`GlobalExceptionHandler`) and HTTP exceptions.
+    * `common-logging`: Request logging interceptors and trace correlation utilities.
+    * `common-grpc`: Centralized gRPC proto files, stub generation settings, and metadata interceptors.
+    * `common-security`: Centralized JWT generation/validation (JwtProvider) and Cryptography utilities (CryptoUtils).
 * **`core-services/`**: Business microservices.
-  * `auth-service`: Handle 2FA authentication, Microsoft Entra ID SSO, JWT generation, and Redis session states.
-  * `user-service`: User profile repository, gRPC provider, and REST APIs for User Management CRUD.
+    * `auth-service`: Handle 2FA authentication, Microsoft Entra ID SSO, JWT generation, and Redis session states.
+    * `user-service`: User profile repository, gRPC provider, and REST APIs for User Management CRUD.
 * **`infrastructure/`**: Centralized infrastructure services and configurations.
-  * `api-gateway`: Spring Cloud Gateway handling centralized routing, JWT validation, Redis Blacklist checking, and standardized CORS.
-  * `config-server`: Centralized Spring Cloud Config server that serves `application.properties` to all microservices based on profiles (`dev`/`prod`).
-  * `discovery-server`: Netflix Eureka Server for dynamic service registration and discovery.
+    * `api-gateway`: Spring Cloud Gateway handling centralized routing, JWT validation, Redis Blacklist checking, and standardized CORS.
+    * `config-server`: Centralized Spring Cloud Config server that serves `application.properties` to all microservices based on profiles (`dev`/`prod`).
+    * `discovery-server`: Netflix Eureka Server for dynamic service registration and discovery.
 * **`.agents/`**: IDE instructions and coding style rules for AI development agents.
 
 ---
@@ -89,9 +89,9 @@ BiteBolt enforces strict Role-Based Access Control (RBAC).
 
 ### Token Management & Blacklist
 - **Dual Token Architecture**: Upon successful authentication, the system issues a short-lived `access_token` (JWT) and a long-lived `refresh_token`.
-- **Client Adaptive Responses**: 
-  - If `Client-Type: web` header is provided, tokens are securely set as `HttpOnly` cookies.
-  - If omitted or set to `mobile` (default), tokens are returned in the JSON response body to be consumed via `Authorization: Bearer`.
+- **Client Adaptive Responses**:
+    - If `Client-Type: web` header is provided, tokens are securely set as `HttpOnly` cookies.
+    - If omitted or set to `mobile` (default), tokens are returned in the JSON response body to be consumed via `Authorization: Bearer`.
 
 ---
 
@@ -141,9 +141,19 @@ cd infrastructure/discovery-server
 
 BiteBolt uses a centralized distributed tracing design to trace requests across services:
 1. Every client request generates or forwards an **`X-Trace-Id`** correlation header via API Gateway.
-2. The `TraceIdInterceptor` binds this ID to the local SLF4J MDC (`traceId`).
+2. The `TraceIdFilter` binds this ID to the local SLF4J MDC (`traceId`, `actor_id`, `client_ip`).
 3. When calling internal services, `GrpcTraceClientInterceptor` automatically propagates the metadata across the network.
 4. The destination service extracts the trace ID, allowing complete, trace-correlated log streaming across all microservice boundaries.
+
+### Log Categories
+BiteBolt enforces strict logging categorization for observability:
+- **Audit Logs** (`@Auditable`): Critical business state changes (emitted to Kafka -> `audit-service`).
+- **Security Logs** (`SecurityLogger`): Authentication, authorization, and security events.
+- **Integration Logs** (`IntegrationLogger`): External API boundaries (3rd party services).
+- **Performance Logs** (`PerformanceLogger`): Method execution time monitoring.
+- **Request/Response Logs**: Automated HTTP lifecycle logging via `RequestResponseLoggingFilter`.
+
+All logs are formatted in JSON using `logstash-logback-encoder` and sensitive data is masked using `MaskingUtil`.
 
 ---
 
