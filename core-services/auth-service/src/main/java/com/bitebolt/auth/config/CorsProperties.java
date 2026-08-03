@@ -10,6 +10,6 @@ import java.util.List;
 @Component
 @ConfigurationProperties(prefix = "cors")
 public class CorsProperties {
-    private List<String> allowedOrigins;
-    private boolean allowCredentials;
+  private List<String> allowedOrigins;
+  private boolean allowCredentials;
 }

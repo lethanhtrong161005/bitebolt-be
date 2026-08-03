@@ -12,21 +12,22 @@ import java.util.List;
 /**
  * Generic Data Transfer Object (DTO) representing a standardized API response.
  *
- * <p>This class defines a consistent response structure for all REST APIs
- * across the bitebolt platform. It encapsulates:
+ * <p>This class defines a consistent response structure for all REST APIs across the bitebolt
+ * platform. It encapsulates:
+ *
  * <ul>
- *     <li>HTTP status code</li>
- *     <li>Localized response message</li>
- *     <li>Response payload</li>
- *     <li>Request trace identifier for distributed tracing</li>
- *     <li>Response timestamp</li>
+ *   <li>HTTP status code
+ *   <li>Localized response message
+ *   <li>Response payload
+ *   <li>Request trace identifier for distributed tracing
+ *   <li>Response timestamp
  * </ul>
  *
- * <p>Using a unified response format simplifies client-side processing,
- * improves API consistency, and facilitates logging and debugging in a
- * microservices environment.
+ * <p>Using a unified response format simplifies client-side processing, improves API consistency,
+ * and facilitates logging and debugging in a microservices environment.
  *
  * <p>Example response:
+ *
  * <pre>{@code
  * {
  *   "status": 200,
@@ -45,7 +46,6 @@ import java.util.List;
  * }</pre>
  *
  * @param <T> the type of the response payload
- *
  * @author bitebolt Team
  * @since 1.0
  */
@@ -56,39 +56,25 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiResponse<T> {
 
-    /**
-     * HTTP status code of the response.
-     */
-    private int status;
+  /** HTTP status code of the response. */
+  private int status;
 
-    /**
-     * Localized response message.
-     */
-    private LocalizedMessageDto message;
+  /** Localized response message. */
+  private LocalizedMessageDto message;
 
-    /**
-     * Response payload.
-     *
-     * <p>May be {@code null} for responses without content
-     * or when an error occurs.
-     */
-    private T data;
+  /**
+   * Response payload.
+   *
+   * <p>May be {@code null} for responses without content or when an error occurs.
+   */
+  private T data;
 
+  @JsonInclude(JsonInclude.Include.NON_EMPTY)
+  private List<LocalizedMessageDto> errors;
 
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    private List<LocalizedMessageDto> errors;
+  /** Distributed tracing identifier used to correlate logs across multiple services. */
+  private String traceRequest;
 
-    /**
-     * Distributed tracing identifier used to correlate logs
-     * across multiple services.
-     */
-    private String traceRequest;
-
-    /**
-     * Timestamp indicating when the response was generated.
-     */
-    private Instant time;
-
-
-
+  /** Timestamp indicating when the response was generated. */
+  private Instant time;
 }

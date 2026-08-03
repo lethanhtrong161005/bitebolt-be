@@ -6,9 +6,9 @@ import lombok.Data;
 @Data
 @Builder
 public class UserSessionResponse {
-    private String userId;
-    private String fullName;
-    private String email;
-    private String avatar;
-    private String role;
+  private String userId;
+  private String fullName;
+  private String email;
+  private String avatar;
+  private String role;
 }

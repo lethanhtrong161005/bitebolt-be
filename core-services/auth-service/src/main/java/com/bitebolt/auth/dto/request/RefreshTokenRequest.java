@@ -13,7 +13,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class RefreshTokenRequest {
 
-    @NotBlank(message = "Refresh token is required")
-    @Schema(description = "The refresh token string. Typically provided in the request body for Mobile clients.")
-    private String refreshToken;
+  @NotBlank(message = "Refresh token is required")
+  @Schema(
+      description =
+          "The refresh token string. Typically provided in the request body for Mobile clients.")
+  private String refreshToken;
 }

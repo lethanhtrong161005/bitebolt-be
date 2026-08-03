@@ -1,11 +1,13 @@
 <configuration>
+    <springProperty scope="context" name="springApplicationName" source="spring.application.name" defaultValue="unknown-service"/>
+
     <appender name="JSON_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
             <fieldNames>
                 <timestamp>timestamp</timestamp>
                 <version>[ignore]</version>
             </fieldNames>
-            <customFields>{"service":"${spring.application.name:-unknown}"}</customFields>
+            <customFields>{"service":"${springApplicationName}"}</customFields>
         </encoder>
     </appender>
 
@@ -25,7 +27,7 @@
                 <timestamp>timestamp</timestamp>
                 <version>[ignore]</version>
             </fieldNames>
-            <customFields>{"service":"${spring.application.name:-unknown}"}</customFields>
+            <customFields>{"service":"${springApplicationName}"}</customFields>
         </encoder>
     </appender>
 

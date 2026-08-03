@@ -11,13 +11,18 @@ import com.bitebolt.common.security.context.UserContext;
 
 public interface AuthService {
 
-    LoginResponse login(LoginRequest request);
+  LoginResponse login(LoginRequest request);
 
-    TokenResponse verifyOtp(VerifyOtpRequest request, String clientTypeHeader, HttpServletResponse httpResponse);
+  TokenResponse verifyOtp(
+      VerifyOtpRequest request, String clientTypeHeader, HttpServletResponse httpResponse);
 
-    UserSessionResponse getCurrentUserProfile(UserContext context);
+  UserSessionResponse getCurrentUserProfile(UserContext context);
 
-    TokenResponse refreshToken(RefreshTokenRequest request, String refreshTokenCookie, String clientTypeHeader, HttpServletResponse httpResponse);
+  TokenResponse refreshToken(
+      RefreshTokenRequest request,
+      String refreshTokenCookie,
+      String clientTypeHeader,
+      HttpServletResponse httpResponse);
 
-    void logout(String accessToken, String clientTypeHeader, HttpServletResponse httpResponse);
+  void logout(String accessToken, String clientTypeHeader, HttpServletResponse httpResponse);
 }

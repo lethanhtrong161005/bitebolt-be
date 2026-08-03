@@ -19,25 +19,26 @@ import java.io.IOException;
 @Tag(name = "SSO Authentication", description = "Endpoints for Microsoft Entra ID SSO login")
 public class SsoController {
 
-    private final SsoService ssoService;
+  private final SsoService ssoService;
 
-    @GetMapping("/entra")
-    @Operation(summary = "Redirect to Microsoft Entra ID login portal")
-    public void initiateEntraLogin(HttpServletResponse response) throws IOException {
-        String redirectUrl = ssoService.initiateEntraLogin();
-        log.info("Redirecting user to Microsoft login: {}", redirectUrl);
-        response.sendRedirect(redirectUrl);
-    }
+  @GetMapping("/entra")
+  @Operation(summary = "Redirect to Microsoft Entra ID login portal")
+  public void initiateEntraLogin(HttpServletResponse response) throws IOException {
+    String redirectUrl = ssoService.initiateEntraLogin();
+    log.info("Redirecting user to Microsoft login: {}", redirectUrl);
+    response.sendRedirect(redirectUrl);
+  }
 
-    @GetMapping("/entra/callback")
-    @Operation(summary = "Callback endpoint for Microsoft Entra ID authentication code exchange")
-    public void handleEntraCallback(
-            @RequestParam("code") String code,
-            @RequestParam("state") String state,
-            HttpServletResponse response) throws IOException {
-        log.info("Received callback from Microsoft Entra ID with state: {}", state);
-        String successRedirectUrl = ssoService.handleEntraCallback(code, state, response);
-        log.info("SSO authentication completed. Redirecting to landing page: {}", successRedirectUrl);
-        response.sendRedirect(successRedirectUrl);
-    }
+  @GetMapping("/entra/callback")
+  @Operation(summary = "Callback endpoint for Microsoft Entra ID authentication code exchange")
+  public void handleEntraCallback(
+      @RequestParam("code") String code,
+      @RequestParam("state") String state,
+      HttpServletResponse response)
+      throws IOException {
+    log.info("Received callback from Microsoft Entra ID with state: {}", state);
+    String successRedirectUrl = ssoService.handleEntraCallback(code, state, response);
+    log.info("SSO authentication completed. Redirecting to landing page: {}", successRedirectUrl);
+    response.sendRedirect(successRedirectUrl);
+  }
 }

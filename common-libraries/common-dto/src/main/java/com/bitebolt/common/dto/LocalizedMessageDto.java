@@ -8,12 +8,12 @@ import lombok.NoArgsConstructor;
 /**
  * Data Transfer Object (DTO) representing a localized message.
  *
- * <p>This class encapsulates a message code along with its localized
- * representations in Vietnamese and English. It is primarily used in
- * standardized API responses to support internationalization (i18n),
- * allowing clients to display messages in the user's preferred language.
+ * <p>This class encapsulates a message code along with its localized representations in Vietnamese
+ * and English. It is primarily used in standardized API responses to support internationalization
+ * (i18n), allowing clients to display messages in the user's preferred language.
  *
  * <p>Example:
+ *
  * <pre>{@code
  * {
  *   "code": "USER_NOT_FOUND",
@@ -31,19 +31,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class LocalizedMessageDto {
 
-    /**
-     * Unique message identifier used for localization and client-side processing.
-     */
-    private String code;
+  /** Unique message identifier used for localization and client-side processing. */
+  private String code;
 
-    /**
-     * Localized message in Vietnamese.
-     */
-    private String vi;
+  /** Localized message in Vietnamese. */
+  private String vi;
 
-    /**
-     * Localized message in English.
-     */
-    private String en;
-
+  /** Localized message in English. */
+  private String en;
 }

@@ -27,75 +27,82 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Authentication Service", description = "Endpoints for 2FA login verification")
 public class AuthController {
 
-    private final AuthService authService;
+  private final AuthService authService;
 
-    @PostMapping("/login")
-    @Operation(summary = "Step 1: Verify phone and password, generate and send 6-digit OTP")
-    public ResponseEntity<ApiResponse<LoginResponse>> login(@Valid @RequestBody LoginRequest request) {
-        LoginResponse response = authService.login(request);
-        return ResponseEntity.ok(ResponseHelper.successWithData(response, AuthMessageConstant.SUCCESS_LOGIN_INITIATED));
+  @PostMapping("/login")
+  @Operation(summary = "Step 1: Verify phone and password, generate and send 6-digit OTP")
+  public ResponseEntity<ApiResponse<LoginResponse>> login(
+      @Valid @RequestBody LoginRequest request) {
+    LoginResponse response = authService.login(request);
+    return ResponseEntity.ok(
+        ResponseHelper.successWithData(response, AuthMessageConstant.SUCCESS_LOGIN_INITIATED));
+  }
+
+  @PostMapping("/verify-otp")
+  @Operation(summary = "Step 2: Verify 6-digit OTP and generate JWT access and refresh tokens")
+  public ResponseEntity<ApiResponse<?>> verifyOtp(
+      @Valid @RequestBody VerifyOtpRequest request,
+      @RequestHeader(value = AuthConstant.CLIENT_TYPE_HEADER, defaultValue = "mobile")
+          String clientTypeHeader,
+      HttpServletResponse httpResponse) {
+    TokenResponse response = authService.verifyOtp(request, clientTypeHeader, httpResponse);
+
+    if (response == null) {
+      return ResponseEntity.ok(ResponseHelper.success(AuthMessageConstant.SUCCESS_OTP_VERIFIED));
     }
 
-    @PostMapping("/verify-otp")
-    @Operation(summary = "Step 2: Verify 6-digit OTP and generate JWT access and refresh tokens")
-    public ResponseEntity<ApiResponse<?>> verifyOtp(
-            @Valid @RequestBody VerifyOtpRequest request,
-            @RequestHeader(value = AuthConstant.CLIENT_TYPE_HEADER, defaultValue = "mobile") String clientTypeHeader,
-            HttpServletResponse httpResponse) {
-        TokenResponse response = authService.verifyOtp(request, clientTypeHeader, httpResponse);
+    return ResponseEntity.ok(
+        ResponseHelper.successWithData(response, AuthMessageConstant.SUCCESS_OTP_VERIFIED));
+  }
 
-        if (response == null) {
-            return ResponseEntity.ok(ResponseHelper.success(AuthMessageConstant.SUCCESS_OTP_VERIFIED));
-        }
+  @GetMapping("/me")
+  @Operation(summary = "Get current authenticated user profile using injected Security Context")
+  public ResponseEntity<ApiResponse<UserSessionResponse>> getCurrentUser(
+      @CurrentUser UserContext context) {
 
-        return ResponseEntity.ok(ResponseHelper.successWithData(response, AuthMessageConstant.SUCCESS_OTP_VERIFIED));
+    UserSessionResponse profile = authService.getCurrentUserProfile(context);
+
+    return ResponseEntity.ok(ResponseHelper.successWithData(profile, "SUCCESS"));
+  }
+
+  @PostMapping("/refresh")
+  @Operation(summary = "Refresh access token using refresh token")
+  public ResponseEntity<ApiResponse<?>> refreshToken(
+      @RequestBody(required = false) RefreshTokenRequest request,
+      @CookieValue(value = "refresh_token", required = false) String refreshTokenCookie,
+      @RequestHeader(value = AuthConstant.CLIENT_TYPE_HEADER, defaultValue = "mobile")
+          String clientTypeHeader,
+      HttpServletResponse httpResponse) {
+
+    TokenResponse response =
+        authService.refreshToken(request, refreshTokenCookie, clientTypeHeader, httpResponse);
+
+    if (response == null) {
+      return ResponseEntity.ok(ResponseHelper.success(AuthMessageConstant.SUCCESS_TOKEN_REFRESHED));
     }
 
-    @GetMapping("/me")
-    @Operation(summary = "Get current authenticated user profile using injected Security Context")
-    public ResponseEntity<ApiResponse<UserSessionResponse>> getCurrentUser(
-            @CurrentUser UserContext context) {
-        
-        UserSessionResponse profile = authService.getCurrentUserProfile(context);
-                
-        return ResponseEntity.ok(ResponseHelper.successWithData(profile, "SUCCESS"));
+    return ResponseEntity.ok(
+        ResponseHelper.successWithData(response, AuthMessageConstant.SUCCESS_TOKEN_REFRESHED));
+  }
+
+  @PostMapping("/logout")
+  @Operation(summary = "Logout and blacklist tokens")
+  public ResponseEntity<ApiResponse<?>> logout(
+      @CookieValue(value = "access_token", required = false) String accessTokenCookie,
+      @RequestHeader(value = "Authorization", required = false) String authorizationHeader,
+      @RequestHeader(value = AuthConstant.CLIENT_TYPE_HEADER, defaultValue = "mobile")
+          String clientTypeHeader,
+      HttpServletResponse httpResponse) {
+
+    String accessToken = accessTokenCookie;
+    if (accessToken == null || accessToken.isEmpty()) {
+      if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+        accessToken = authorizationHeader.substring(7);
+      }
     }
 
-    @PostMapping("/refresh")
-    @Operation(summary = "Refresh access token using refresh token")
-    public ResponseEntity<ApiResponse<?>> refreshToken(
-            @RequestBody(required = false) RefreshTokenRequest request,
-            @CookieValue(value = "refresh_token", required = false) String refreshTokenCookie,
-            @RequestHeader(value = AuthConstant.CLIENT_TYPE_HEADER, defaultValue = "mobile") String clientTypeHeader,
-            HttpServletResponse httpResponse) {
-        
-        TokenResponse response = authService.refreshToken(request, refreshTokenCookie, clientTypeHeader, httpResponse);
+    authService.logout(accessToken, clientTypeHeader, httpResponse);
 
-        if (response == null) {
-            return ResponseEntity.ok(ResponseHelper.success(AuthMessageConstant.SUCCESS_TOKEN_REFRESHED));
-        }
-
-        return ResponseEntity.ok(ResponseHelper.successWithData(response, AuthMessageConstant.SUCCESS_TOKEN_REFRESHED));
-    }
-
-    @PostMapping("/logout")
-    @Operation(summary = "Logout and blacklist tokens")
-    public ResponseEntity<ApiResponse<?>> logout(
-            @CookieValue(value = "access_token", required = false) String accessTokenCookie,
-            @RequestHeader(value = "Authorization", required = false) String authorizationHeader,
-            @RequestHeader(value = AuthConstant.CLIENT_TYPE_HEADER, defaultValue = "mobile") String clientTypeHeader,
-            HttpServletResponse httpResponse) {
-        
-        String accessToken = accessTokenCookie;
-        if (accessToken == null || accessToken.isEmpty()) {
-            if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-                accessToken = authorizationHeader.substring(7);
-            }
-        }
-
-        authService.logout(accessToken, clientTypeHeader, httpResponse);
-        
-        return ResponseEntity.ok(ResponseHelper.success(AuthMessageConstant.SUCCESS_LOGOUT));
-    }
+    return ResponseEntity.ok(ResponseHelper.success(AuthMessageConstant.SUCCESS_LOGOUT));
+  }
 }
-

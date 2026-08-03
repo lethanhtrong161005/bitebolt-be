@@ -7,13 +7,13 @@ import java.lang.annotation.Target;
 
 /**
  * Annotation to inject the authenticated user's context into a controller method parameter.
- * 
- * Example:
+ *
+ * <p>Example:
+ *
  * <pre>
  *   public ResponseEntity<?> getProfile(@CurrentUser UserContext context)
  * </pre>
  */
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface CurrentUser {
-}
+public @interface CurrentUser {}

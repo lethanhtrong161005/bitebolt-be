@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SmsOtpEvent {
-    private String phone;
-    private String otp;
+  private String phone;
+  private String otp;
 }
