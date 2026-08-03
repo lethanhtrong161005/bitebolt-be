@@ -4,16 +4,14 @@ import com.bitebolt.common.dto.ApiResponse;
 import com.bitebolt.common.dto.LocalizedMessageDto;
 import com.bitebolt.common.utils.MessageUtils;
 import com.bitebolt.common.utils.ResponseHelper;
-import com.bitebolt.common.validation.RequireField;
 import jakarta.validation.ConstraintViolation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.ObjectUtils;
-import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,17 +21,13 @@ import java.util.List;
  * <p>This class centralizes exception handling across the application, ensuring that all exceptions
  * are converted into a standardized {@link ApiResponse} before being returned to the client.
  *
- * <p>Using a global exception handler provides the following benefits:
+ * <p>Standard Execution Steps:
  *
- * <ul>
- *   <li>Consistent API response format
- *   <li>Centralized error handling logic
- *   <li>Reduced duplicate try-catch blocks in controllers
- *   <li>Improved maintainability and readability
- * </ul>
- *
- * <p>Additional exception handlers can be added as the application grows to handle validation
- * errors, authentication failures, database exceptions, and unexpected system errors.
+ * <ol>
+ *   <li><strong>HttpException:</strong> Maps application HTTP status exceptions to ApiResponse error envelopes.
+ *   <li><strong>MethodArgumentNotValidException:</strong> Processes all field and class-level ObjectErrors (such as {@code @ValidSort}).
+ *   <li><strong>Unwrap & Localization:</strong> Unwraps {@link ConstraintViolation} to extract raw message code key template (e.g. {@code {ERROR_INVALID_SORT_FIELD}}) and resolves VI/EN translations via {@link MessageUtils}.
+ * </ol>
  *
  * @author bitebolt Team
  * @since 1.0
@@ -44,37 +38,43 @@ public class GlobalExceptionHandler {
   /**
    * Handles {@link HttpException} and converts it into a standardized API error response.
    *
-   * <p>The HTTP status code and localized message are extracted from the exception and used to
-   * build the response body.
-   *
    * @param ex the thrown {@link HttpException}
    * @return a {@link ResponseEntity} containing the standardized error {@link ApiResponse}
    */
   @ExceptionHandler(HttpException.class)
   public ResponseEntity<ApiResponse<Object>> handleHttpException(HttpException ex) {
-
     ApiResponse<Object> response =
         ResponseHelper.error(ex.getStatusCode(), ex.getLocalizedMessage());
 
     return ResponseEntity.status(ex.getStatusCode()).body(response);
   }
 
+  /**
+   * Handles JSR-380 validation exceptions including both field-level and class-level constraint violations (e.g. {@code @ValidSort}).
+   *
+   * @param ex MethodArgumentNotValidException thrown during @Valid request processing.
+   * @return ResponseEntity with HTTP 400 Bad Request containing localized error details.
+   */
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<ApiResponse<Object>> handleValidationException(
       MethodArgumentNotValidException ex) {
-    List<FieldError> fieldErrors = ex.getBindingResult().getFieldErrors();
+    List<ObjectError> allErrors = ex.getBindingResult().getAllErrors();
 
-    if (ObjectUtils.isEmpty(fieldErrors)) {
+    if (ObjectUtils.isEmpty(allErrors)) {
       return buildFallbackResponse();
     }
 
     List<LocalizedMessageDto> errorsList = new ArrayList<>();
 
-    for (FieldError fieldError : fieldErrors) {
-      LocalizedMessageDto detailMessage = extractMessageFromAnnotation(fieldError);
-      if (!ObjectUtils.isEmpty(detailMessage)) {
+    for (ObjectError error : allErrors) {
+      LocalizedMessageDto detailMessage = extractLocalizedMessage(error);
+      if (detailMessage != null) {
         errorsList.add(detailMessage);
       }
+    }
+
+    if (errorsList.isEmpty()) {
+      return buildFallbackResponse();
     }
 
     ApiResponse<Object> response = ResponseHelper.error(400, errorsList);
@@ -87,33 +87,25 @@ public class GlobalExceptionHandler {
     return ResponseEntity.status(400).body(response);
   }
 
-  private LocalizedMessageDto extractMessageFromAnnotation(FieldError fieldError) {
+  private LocalizedMessageDto extractLocalizedMessage(ObjectError error) {
     try {
-      ConstraintViolation<?> violation = fieldError.unwrap(ConstraintViolation.class);
-      Annotation annotation = violation.getConstraintDescriptor().getAnnotation();
-
-      if (annotation instanceof RequireField requireField) {
-        return formatRequireFieldMessage(requireField);
+      ConstraintViolation<?> violation = error.unwrap(ConstraintViolation.class);
+      if (violation != null && violation.getConstraintDescriptor() != null) {
+        String template = violation.getConstraintDescriptor().getMessageTemplate();
+        if (!ObjectUtils.isEmpty(template)) {
+          String key = template.replaceAll("[{}]", "");
+          return MessageUtils.getMessage(key);
+        }
       }
-
-    } catch (Exception e) {
-      throw new RuntimeException(
-          "Failed to process validation annotation for field: " + fieldError.getField(), e);
+    } catch (Exception ignored) {
+      // Fallback if unwrap is not available
     }
-    return null;
-  }
 
-  private LocalizedMessageDto formatRequireFieldMessage(RequireField requireField) {
-    String msgCode = requireField.messageCode();
-    String argVi = requireField.i18n().vi();
-    String argEn = requireField.i18n().en();
-
-    LocalizedMessageDto templateMsg = MessageUtils.getMessage(msgCode);
-
-    return LocalizedMessageDto.builder()
-        .code(msgCode)
-        .vi(String.format(templateMsg.getVi(), argVi))
-        .en(String.format(templateMsg.getEn(), argEn))
-        .build();
+    String defaultMessage = error.getDefaultMessage();
+    if (!ObjectUtils.isEmpty(defaultMessage)) {
+      String messageKey = defaultMessage.replaceAll("[{}]", "");
+      return MessageUtils.getMessage(messageKey);
+    }
+    return MessageUtils.getMessage("ERROR_BAD_REQUEST");
   }
 }

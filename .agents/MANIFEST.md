@@ -28,10 +28,11 @@
 │   │       ├── PHASE1_INTERNAL_SSO_PLAN.md           # Microsoft Entra ID SSO (ADMIN/STAFF)
 │   │       ├── PHASE2_EXTERNAL_AUTH_PLAN.md          # Phone+OTP & Google login (DRIVER/RIDER)
 │   │       └── implementation_plan_logout.md         # Token blacklist & logout
-│   └── observability/                 # Logging & Monitoring
-│       └── audit-logging/
-│           ├── audit-logging-guide.md                # Distributed audit logging setup
-│           └── implementation-plan.md                # Implementation roadmap
+│   ├── observability/                 # Logging & Monitoring
+│   │   └── audit-logging/
+│   │       ├── audit-logging-guide.md                # Distributed audit logging setup
+│   │       └── implementation-plan.md                # Implementation roadmap
+│   └── common-pagination-and-search-guide.md     # Common Pagination, Dynamic Search & PageResponse standard
 │
 ├── rules/                             # Mandatory Rules & Standards
 │   ├── CODING_STANDARDS.md            # 🔴 MANDATORY - Google Java Style, JavaDoc requirements

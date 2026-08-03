@@ -473,12 +473,16 @@ catch (Exception e) {
 
 ---
 
-## 8. Data Access (JPA/Repositories)
+## 8. Data Access (JPA/Repositories) & Common Pagination
 
-### ✅ Query Rules
+### ✅ Query & Pagination Rules
 1. **ALWAYS use** `@Query` with JPQL for filtering `isDeleted`
 2. **NEVER rely** on Spring Data method name derivation for soft deletes
 3. **Include JPA Annotations** for entity mapping
+4. **ALWAYS extend `BaseRequestParam`** (`com.bitebolt.common.dto.request.BaseRequestParam`) for search/pagination filter DTOs.
+5. **ALWAYS return `PageResponse<T>`** (`com.bitebolt.common.dto.response.PageResponse`) instead of raw Spring Data `Page<T>` in Service and Controller layers.
+6. **ALWAYS use Spring `@Component` Helper/Mapper classes** (e.g. `AuditLogHelper`) to map Entities to DTOs instead of manual mapping methods inside Service implementations.
+7. **USE `GenericSpecification<E>`** for dynamic query filtering with Criteria API.
 
 ### ✅ Repository Example
 ```java

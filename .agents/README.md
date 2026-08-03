@@ -196,6 +196,7 @@ Ao gerar código, seu agente DEVE validar:
 | Revisar código | `prompts/code-review/*` + `rules/ARCHITECTURE_RULES.md` |
 | Implementar autenticação | `docs/business/AUTH_BUSINESS_DESIGN.md` |
 | Configurar logging | `docs/observability/audit-logging/audit-logging-guide.md` |
+| Implementar Phân trang & Search | `docs/common-pagination-and-search-guide.md` |
 | Integrar gRPC | `skills/microservices/gRPCImplementationSkill.md` |
 | Escrever testes | `templates/java/TestTemplate.java` |
 

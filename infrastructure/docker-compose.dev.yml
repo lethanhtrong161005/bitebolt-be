@@ -92,6 +92,9 @@ services:
     environment:
       - discovery.type=single-node
       - OPENSEARCH_INITIAL_ADMIN_PASSWORD=${OPENSEARCH_PASSWORD:-StrongP@ssw0rd123}
+      - DISABLE_SECURITY_PLUGIN=true
+      - "DISABLE_INSTALL_DEMO_CONFIG=true"
+      - compatibility.override_main_response_version=true
     ports:
       - "9200:9200"
     networks:

@@ -10,12 +10,12 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
  *
  * <p><strong>Standard Execution Steps:</strong></p>
  * <ol>
- *   <li><strong>Bootstrap:</strong> Initializes the Spring Boot application context.</li>
- *   <li><strong>Discovery:</strong> Registers the service with Netflix Eureka via {@code @EnableDiscoveryClient}.</li>
+ *   <li><strong>Bootstrap:</strong> Initializes Spring Boot application context with base component scanning.</li>
+ *   <li><strong>Discovery:</strong> Registers service with Netflix Eureka via {@code @EnableDiscoveryClient}.</li>
  *   <li><strong>Auditing:</strong> Enables JPA Auditing to automatically populate entity timestamps via {@code @EnableJpaAuditing}.</li>
  * </ol>
  */
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {"com.bitebolt.audit", "com.bitebolt.common"})
 @EnableDiscoveryClient
 @EnableJpaAuditing
 public class AuditServiceApplication {

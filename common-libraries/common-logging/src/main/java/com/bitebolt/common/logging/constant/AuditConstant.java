@@ -37,6 +37,8 @@ public final class AuditConstant {
   // --- MDC (Mapped Diagnostic Context) Field Keys ---
   public static final String MDC_KEY_LOG_TYPE = "log_type";
   public static final String MDC_KEY_ACTOR_ID = "actor_id";
+  public static final String MDC_KEY_ACTOR_EMAIL = "actor_email";
+  public static final String MDC_KEY_ACTOR_NAME = "actor_name";
   public static final String MDC_KEY_CLIENT_IP = "client_ip";
   public static final String MDC_KEY_EVENT = "event";
   public static final String MDC_KEY_SEVERITY = "severity";

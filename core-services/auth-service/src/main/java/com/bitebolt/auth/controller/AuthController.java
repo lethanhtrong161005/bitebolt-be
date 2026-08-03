@@ -72,10 +72,17 @@ public class AuthController {
       @CookieValue(value = "refresh_token", required = false) String refreshTokenCookie,
       @RequestHeader(value = AuthConstant.CLIENT_TYPE_HEADER, defaultValue = "mobile")
           String clientTypeHeader,
+      @RequestHeader(value = "Client-Type", required = false)
+          String legacyClientTypeHeader,
       HttpServletResponse httpResponse) {
 
+    String effectiveClientType = clientTypeHeader;
+    if ("mobile".equalsIgnoreCase(clientTypeHeader) && legacyClientTypeHeader != null && !legacyClientTypeHeader.isEmpty()) {
+      effectiveClientType = legacyClientTypeHeader;
+    }
+
     TokenResponse response =
-        authService.refreshToken(request, refreshTokenCookie, clientTypeHeader, httpResponse);
+        authService.refreshToken(request, refreshTokenCookie, effectiveClientType, httpResponse);
 
     if (response == null) {
       return ResponseEntity.ok(ResponseHelper.success(AuthMessageConstant.SUCCESS_TOKEN_REFRESHED));

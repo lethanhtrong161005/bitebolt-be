@@ -56,6 +56,7 @@ public class EntraSsoServiceImpl implements SsoService {
   private final ObjectMapper objectMapper;
 
   @Override
+  @Auditable(action = AuditAction.SSO_URL, resourceType = "SSO_URL")
   public String initiateEntraLogin() {
     String state = UUID.randomUUID().toString();
     String stateKey = AuthRedisConstant.SSO_STATE_PREFIX + state;

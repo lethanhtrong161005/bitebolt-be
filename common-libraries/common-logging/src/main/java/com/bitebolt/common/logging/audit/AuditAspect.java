@@ -68,6 +68,8 @@ public class AuditAspect {
               .logType(AuditConstant.LOG_TYPE_AUDIT)
               .traceId(MDC.get(AppConstant.TRACE_ID_KEY))
               .actorId(MDC.get(AuditConstant.MDC_KEY_ACTOR_ID))
+              .actorEmail(MDC.get(AuditConstant.MDC_KEY_ACTOR_EMAIL))
+              .actorName(MDC.get(AuditConstant.MDC_KEY_ACTOR_NAME))
               .actorIp(MDC.get(AuditConstant.MDC_KEY_CLIENT_IP))
               .action(auditable.action().name())
               .resourceType(auditable.resourceType())

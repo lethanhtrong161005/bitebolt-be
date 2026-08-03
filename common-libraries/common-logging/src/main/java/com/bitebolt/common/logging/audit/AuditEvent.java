@@ -28,6 +28,8 @@ public class AuditEvent {
   private String logType;
   private String traceId;
   private String actorId;
+  private String actorEmail;
+  private String actorName;
   private String actorIp;
   private String action;
   private String resourceType;

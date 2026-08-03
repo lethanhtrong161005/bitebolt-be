@@ -21,7 +21,7 @@ public class SsoController {
 
   private final SsoService ssoService;
 
-  @GetMapping("/entra")
+  @GetMapping({"/entra", "/entra/login"})
   @Operation(summary = "Redirect to Microsoft Entra ID login portal")
   public void initiateEntraLogin(HttpServletResponse response) throws IOException {
     String redirectUrl = ssoService.initiateEntraLogin();

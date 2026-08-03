@@ -49,8 +49,8 @@ public class MessageUtils {
   /**
    * Retrieves a localized message in both Vietnamese and English.
    *
-   * <p>If the specified message code cannot be found, the message code itself will be returned as
-   * the default message.
+   * <p>If the specified message code cannot be found or messageSource is not yet initialized,
+   * the message code itself will be returned as the default message.
    *
    * @param messageCode the message key defined in the resource bundle
    * @param args optional arguments used for placeholder substitution (e.g. "{0}", "{1}")
@@ -58,10 +58,17 @@ public class MessageUtils {
    *     English translations
    */
   public static LocalizedMessageDto getMessage(String messageCode, Object... args) {
+    if (messageSource == null) {
+      return LocalizedMessageDto.builder()
+          .code(messageCode)
+          .vi(messageCode)
+          .en(messageCode)
+          .build();
+    }
 
-    String vi = messageSource.getMessage(messageCode, args, messageCode, new Locale("vi"));
+    String vi = messageSource.getMessage(messageCode, args, messageCode, Locale.forLanguageTag("vi"));
 
-    String en = messageSource.getMessage(messageCode, args, messageCode, new Locale("en"));
+    String en = messageSource.getMessage(messageCode, args, messageCode, Locale.ENGLISH);
 
     return LocalizedMessageDto.builder().code(messageCode).vi(vi).en(en).build();
   }

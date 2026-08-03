@@ -24,7 +24,9 @@ import com.bitebolt.common.exception.HttpException;
 import com.bitebolt.common.constant.AppConstant;
 import com.bitebolt.common.security.utils.CryptoUtils;
 import com.bitebolt.common.security.context.UserContext;
+import com.bitebolt.common.logging.constant.AuditConstant;
 import com.bitebolt.auth.util.CookieUtils;
+import org.slf4j.MDC;
 import io.jsonwebtoken.Claims;
 
 import java.util.Date;
@@ -106,6 +108,7 @@ public class AuthServiceImpl implements AuthService {
 
   @Override
   @Transactional(readOnly = true)
+  @Auditable(action = AuditAction.VERIFY_OTP, resourceType = "Credential")
   public TokenResponse verifyOtp(
       VerifyOtpRequest request, String clientTypeHeader, HttpServletResponse httpResponse) {
     String sessionId = request.getSessionId();
@@ -211,6 +214,7 @@ public class AuthServiceImpl implements AuthService {
   }
 
   @Override
+  @Auditable(action = AuditAction.REFRESH_TOKEN, resourceType = "Credential")
   public TokenResponse refreshToken(
       RefreshTokenRequest request,
       String refreshTokenCookie,
@@ -224,11 +228,14 @@ public class AuthServiceImpl implements AuthService {
     }
 
     String refreshToken = null;
-    if (clientType == ClientType.WEB) {
-      refreshToken = refreshTokenCookie;
+    if (clientType == ClientType.WEB && refreshTokenCookie != null && !refreshTokenCookie.trim().isEmpty()) {
+      refreshToken = refreshTokenCookie.trim();
     } else {
-      if (request != null && request.getRefreshToken() != null) {
-        refreshToken = request.getRefreshToken();
+      if (request != null && request.getRefreshToken() != null && !request.getRefreshToken().trim().isEmpty()) {
+        refreshToken = request.getRefreshToken().trim();
+      } else if (refreshTokenCookie != null && !refreshTokenCookie.trim().isEmpty()) {
+        refreshToken = refreshTokenCookie.trim();
+        clientType = ClientType.WEB;
       }
     }
 
@@ -271,6 +278,13 @@ public class AuthServiceImpl implements AuthService {
 
     UserProfileResponse userProfile = userGrpcClient.getUserProfile(userId);
 
+    // Populate MDC context for Audit Aspect to capture snapshot actor metadata
+    MDC.put(AuditConstant.MDC_KEY_ACTOR_ID, userId.toString());
+    if (userProfile != null) {
+      if (userProfile.getEmail() != null) MDC.put(AuditConstant.MDC_KEY_ACTOR_EMAIL, userProfile.getEmail());
+      if (userProfile.getFullName() != null) MDC.put(AuditConstant.MDC_KEY_ACTOR_NAME, userProfile.getFullName());
+    }
+
     // Generate new access token
     java.util.Map<String, Object> newClaims = new java.util.HashMap<>();
     newClaims.put("role", credential.getRole().name());
@@ -292,7 +306,7 @@ public class AuthServiceImpl implements AuthService {
   }
 
   @Override
-  @Auditable(action = AuditAction.LOGOUT)
+  @Auditable(action = AuditAction.LOGOUT, resourceType = "Credential")
   public void logout(
       String accessToken, String clientTypeHeader, HttpServletResponse httpResponse) {
     if (accessToken != null && !accessToken.isEmpty() && jwtProvider.validateToken(accessToken)) {

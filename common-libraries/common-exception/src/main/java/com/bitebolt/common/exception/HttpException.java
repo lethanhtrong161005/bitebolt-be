@@ -52,4 +52,12 @@ public class HttpException extends RuntimeException {
     this.statusCode = statusCode;
     this.errorMessage = MessageUtils.getMessage(messageCode, args);
   }
+
+  public int getStatusCode() {
+    return statusCode;
+  }
+
+  public LocalizedMessageDto getErrorMessage() {
+    return errorMessage;
+  }
 }

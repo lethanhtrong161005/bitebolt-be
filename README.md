@@ -183,7 +183,9 @@ graph LR
    - Uses the `@Auditable(action = ..., resourceType = ..., resourceIdParam = ...)` annotation.
    - The `AuditAspect` interceptor records execution outcomes (`SUCCESS`/`FAILURE`) and publishes asynchronous events to the Kafka `audit.events` topic.
    - `audit-service` consumes these events and persists them into PostgreSQL (`audit_db.audit_logs`) following **Append-Only** principles.
+   - Exposes REST Query API `GET /api/v1/audit/events` for Admin Portal searching, filtering (by `traceId`, `actorId`, `action`, `status`, date range) and pagination.
    - All string literals (`AUDIT`, `SUCCESS`, `FAILURE`, `actor_id`, `client_ip`, `audit.events`) are strictly centralized in `AuditConstant.java`.
+   - Detailed documentation: Refer to [.agents/docs/observability/audit-query-api-and-storage.md](.agents/docs/observability/audit-query-api-and-storage.md).
 
 ---
 
