@@ -2,7 +2,6 @@ package com.bitebolt.auth.service.impl;
 
 import com.bitebolt.auth.client.UserGrpcClient;
 import com.bitebolt.auth.config.CookieProperties;
-import com.bitebolt.auth.config.EntraProperties;
 import com.bitebolt.auth.constant.AuthConstant;
 import com.bitebolt.auth.constant.AuthMessageConstant;
 import com.bitebolt.auth.constant.AuthRedisConstant;
@@ -16,6 +15,8 @@ import com.bitebolt.auth.util.CookieUtils;
 import com.bitebolt.common.security.utils.CryptoUtils;
 import com.bitebolt.common.security.jwt.JwtProvider;
 import com.bitebolt.common.exception.HttpException;
+import com.bitebolt.common.logging.audit.AuditAction;
+import com.bitebolt.common.logging.audit.Auditable;
 import com.bitebolt.grpc.user.UserProfileResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microsoft.aad.msal4j.AuthorizationCodeParameters;
@@ -24,6 +25,7 @@ import com.microsoft.aad.msal4j.ConfidentialClientApplication;
 import com.microsoft.aad.msal4j.IAuthenticationResult;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import com.bitebolt.auth.config.EntraProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpHeaders;
@@ -68,9 +70,6 @@ public class EntraSsoServiceImpl implements SsoService {
         log.info("[SSO] Generated and saved state to Redis: key={}, value=valid", stateKey);
 
         String authorizeUrl = entraProperties.getAuthorizeUrl();
-        if (authorizeUrl == null || authorizeUrl.isEmpty()) {
-            authorizeUrl = "https://login.microsoftonline.com/common/oauth2/v2.0/authorize";
-        }
 
         // Build the Microsoft Entra ID OAuth 2.0 authorization URL
         return UriComponentsBuilder.fromHttpUrl(authorizeUrl)
@@ -86,6 +85,7 @@ public class EntraSsoServiceImpl implements SsoService {
 
     @Override
     @Transactional(rollbackFor = Throwable.class)
+    @Auditable(action = AuditAction.SSO_LOGIN_SUCCESS, resourceType = "Credential")
     public String handleEntraCallback(String code, String state, HttpServletResponse httpResponse) {
         log.info("[SSO] Received callback code: {}, state: {}", code, state);
         
@@ -107,9 +107,6 @@ public class EntraSsoServiceImpl implements SsoService {
 
         try {
             String authorityUrl = entraProperties.getAuthorityUrl();
-            if (authorityUrl == null || authorityUrl.isEmpty()) {
-                authorityUrl = "https://login.microsoftonline.com/common";
-            }
 
             // 2. Exchange Authorization Code for Tokens via MSAL4J
             ConfidentialClientApplication app = ConfidentialClientApplication.builder(
@@ -165,10 +162,10 @@ public class EntraSsoServiceImpl implements SsoService {
 
             // 5. Auto-provision STAFF if not found in database and domain is valid
             if (credential == null) {
-                String allowedDomain = entraProperties.getAllowedEmailDomain();
-                if (allowedDomain != null && !allowedDomain.isEmpty()) {
-                    if (!email.endsWith("@" + allowedDomain)) {
-                        log.warn("Access denied. Email {} domain does not match allowed domain: {}", email, allowedDomain);
+                String allowedEmailDomain = entraProperties.getAllowedEmailDomain();
+                if (allowedEmailDomain != null && !allowedEmailDomain.isEmpty()) {
+                    if (!email.endsWith("@" + allowedEmailDomain)) {
+                        log.warn("Access denied. Email {} domain does not match allowed domain: {}", email, allowedEmailDomain);
                         //TODO: By pass test in dev environment
                         //throw new HttpException(403, AuthMessageConstant.ERROR_INVALID_EMAIL_DOMAIN);
                     }

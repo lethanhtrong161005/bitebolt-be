@@ -17,6 +17,8 @@ import com.bitebolt.auth.enums.Status;
 import com.bitebolt.auth.event.SmsOtpEvent;
 import com.bitebolt.auth.repository.CredentialRepository;
 import com.bitebolt.auth.service.AuthService;
+import com.bitebolt.common.logging.audit.AuditAction;
+import com.bitebolt.common.logging.audit.Auditable;
 import com.bitebolt.common.security.jwt.JwtProvider;
 import com.bitebolt.common.exception.HttpException;
 import com.bitebolt.common.constant.AppConstant;
@@ -58,6 +60,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional(readOnly = true)
+    @Auditable(action = AuditAction.LOGIN_SUCCESS, resourceType = "Credential")
     public LoginResponse login(LoginRequest request) {
         Credential credential = credentialRepository.findByPhone(request.getPhone())
                 .orElseThrow(() -> new HttpException(401, AuthMessageConstant.ERROR_UNAUTHORIZED));
@@ -267,6 +270,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Auditable(action = AuditAction.LOGOUT)
     public void logout(String accessToken, String clientTypeHeader, HttpServletResponse httpResponse) {
         if (accessToken != null && !accessToken.isEmpty() && jwtProvider.validateToken(accessToken)) {
             try {

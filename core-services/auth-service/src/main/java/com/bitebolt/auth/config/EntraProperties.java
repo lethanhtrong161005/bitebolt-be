@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties(prefix = "entra")
 public class EntraProperties {
+    private String tenantId;
     private String authorityUrl;
     private String authorizeUrl;
     private String clientId;

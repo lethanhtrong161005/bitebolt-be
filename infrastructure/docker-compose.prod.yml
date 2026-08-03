@@ -56,6 +56,78 @@ services:
 
   # Ghi chú: redis-ui và kafka-ui đã bị loại bỏ ở môi trường PROD để bảo mật
 
+  # Observability Stack
+  opensearch:
+    image: opensearchproject/opensearch:2.11.0
+    container_name: BiteBolt-opensearch-prod
+    environment:
+      - discovery.type=single-node
+      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=${OPENSEARCH_PASSWORD:-StrongP@ssw0rd123}
+    ports:
+      - "127.0.0.1:9200:9200"
+    networks:
+      - BiteBolt-network-prod
+    restart: always
+
+  opensearch-dashboards:
+    image: opensearchproject/opensearch-dashboards:2.11.0
+    container_name: BiteBolt-opensearch-dashboards-prod
+    ports:
+      - "127.0.0.1:5601:5601"
+    environment:
+      - OPENSEARCH_HOSTS=https://opensearch:9200
+    depends_on:
+      - opensearch
+    networks:
+      - BiteBolt-network-prod
+    restart: always
+
+  fluent-bit:
+    image: fluent/fluent-bit:3.0
+    container_name: BiteBolt-fluent-bit-prod
+    networks:
+      - BiteBolt-network-prod
+    depends_on:
+      - opensearch
+    restart: always
+
+  prometheus:
+    image: prom/prometheus:v2.51.0
+    container_name: BiteBolt-prometheus-prod
+    ports:
+      - "127.0.0.1:9090:9090"
+    networks:
+      - BiteBolt-network-prod
+    restart: always
+
+  grafana:
+    image: grafana/grafana:10.4.0
+    container_name: BiteBolt-grafana-prod
+    ports:
+      - "127.0.0.1:3001:3000"
+    networks:
+      - BiteBolt-network-prod
+    restart: always
+
+  tempo:
+    image: grafana/tempo:2.4.0
+    container_name: BiteBolt-tempo-prod
+    command: [ "-config.file=/etc/tempo.yaml" ]
+    ports:
+      - "127.0.0.1:3200:3200"
+      - "127.0.0.1:4317:4317" # OTLP gRPC
+    networks:
+      - BiteBolt-network-prod
+    restart: always
+
+  alertmanager:
+    image: prom/alertmanager:v0.27.0
+    container_name: BiteBolt-alertmanager-prod
+    ports:
+      - "127.0.0.1:9093:9093"
+    networks:
+      - BiteBolt-network-prod
+    restart: always
 networks:
   BiteBolt-network-prod:
     driver: bridge

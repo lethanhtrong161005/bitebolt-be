@@ -1,13 +1,36 @@
 <configuration>
     <appender name="JSON_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <pattern>
-                {"timestamp":"%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ}", "level":"%level", "trace_id":"%X{traceId}", "thread":"%thread", "class":"%logger{40}", "message":"%message"}%n
-            </pattern>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <fieldNames>
+                <timestamp>timestamp</timestamp>
+                <version>[ignore]</version>
+            </fieldNames>
+            <customFields>{"service":"${spring.application.name:-unknown}"}</customFields>
+        </encoder>
+    </appender>
+
+    <appender name="JSON_ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="JSON_CONSOLE" />
+        <queueSize>512</queueSize>
+        <discardingThreshold>0</discardingThreshold>
+    </appender>
+
+    <!-- Appender đẩy log trực tiếp tới Fluent Bit qua TCP -->
+    <appender name="JSON_TCP" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+        <!-- Khi chạy microservice ngoài Docker thì Fluent Bit ở localhost:24224. 
+             Khi chạy trong Docker thì cấu hình biến môi trường LOGSTASH_DESTINATION để ghi đè -->
+        <destination>${LOGSTASH_DESTINATION:-localhost:24224}</destination>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <fieldNames>
+                <timestamp>timestamp</timestamp>
+                <version>[ignore]</version>
+            </fieldNames>
+            <customFields>{"service":"${spring.application.name:-unknown}"}</customFields>
         </encoder>
     </appender>
 
     <root level="INFO">
-        <appender-ref ref="JSON_CONSOLE" />
+        <appender-ref ref="JSON_ASYNC" />
+        <appender-ref ref="JSON_TCP" />
     </root>
 </configuration>

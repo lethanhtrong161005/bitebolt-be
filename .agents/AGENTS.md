@@ -61,11 +61,14 @@ Every constant representing a message key MUST contain a Javadoc comment summari
 
 ---
 
-## 🪵 Rule 3: Tracing & Logging Propagation
+## 🪵 Rule 3: Enterprise Observability & Logging Architecture
 
-We maintain a strict distributed tracing standard with MDC (`traceId`). Must propagate across HTTP and gRPC.
+BiteBolt uses a centralized distributed tracing and logging architecture (OpenSearch, Fluent Bit, Grafana, Tempo, Kafka). You MUST follow these 4 strict logging rules:
 
----
+1. **Trace Context Injection**: Bắt buộc phải inject trace context (`MDC.put("traceId", ...)`) trong các async flow hoặc Kafka listener. (Trừ khi OpenTelemetry Java Agent đã tự động làm việc này).
+2. **Structured JSON Output**: Phải dùng `logstash-logback-encoder` để output JSON trong file cấu hình Logback (`logback-spring.xml`). Tuyệt đối không tự viết custom string formatter hoặc in log kiểu text thô (`PatternLayoutEncoder`).
+3. **Audit Trails for State Changes**: Bất kỳ hành động thay đổi data quan trọng nào (Create/Update/Delete user, config thay đổi, duyệt đơn hàng) **ĐỀU PHẢI** gắn annotation `@Auditable(action = AuditAction.XXX)` vào method để tự động emit audit event về `audit-service`. KHÔNG dùng `log.info()` cho mục đích Audit.
+4. **Data Privacy (Masking)**: CẤM log dữ liệu nhạy cảm (Password, Token, OTP, Full Credit Card). Khi cần thiết phải log, bắt buộc phải bọc qua tiện ích `MaskingUtil.mask...()` thuộc `common-logging`.
 
 ## 🛑 Rule 4: Data Access & Spring Data JPA
 
