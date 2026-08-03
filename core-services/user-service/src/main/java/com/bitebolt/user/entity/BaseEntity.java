@@ -19,22 +19,22 @@ import java.time.Instant;
 @EntityListeners(AuditingEntityListener.class)
 public abstract class BaseEntity {
 
-    @CreatedDate
-    @Column(name = "created_at", updatable = false)
-    private Instant createdAt;
+  @CreatedDate
+  @Column(name = "created_at", updatable = false)
+  private Instant createdAt;
 
-    @LastModifiedDate
-    @Column(name = "updated_at")
-    private Instant updatedAt;
+  @LastModifiedDate
+  @Column(name = "updated_at")
+  private Instant updatedAt;
 
-    @CreatedBy
-    @Column(name = "created_by", updatable = false)
-    private String createdBy;
+  @CreatedBy
+  @Column(name = "created_by", updatable = false)
+  private String createdBy;
 
-    @LastModifiedBy
-    @Column(name = "updated_by")
-    private String updatedBy;
+  @LastModifiedBy
+  @Column(name = "updated_by")
+  private String updatedBy;
 
-    @Column(name = "is_deleted")
-    private Boolean isDeleted = false;
+  @Column(name = "is_deleted")
+  private Boolean isDeleted = false;
 }

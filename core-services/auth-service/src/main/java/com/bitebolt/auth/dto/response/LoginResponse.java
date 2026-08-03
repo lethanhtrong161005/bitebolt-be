@@ -12,6 +12,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class LoginResponse {
 
-    @JsonProperty("session_id")
-    private String sessionId;
+  @JsonProperty("session_id")
+  private String sessionId;
 }

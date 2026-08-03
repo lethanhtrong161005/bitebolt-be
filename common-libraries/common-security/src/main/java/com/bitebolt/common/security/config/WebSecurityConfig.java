@@ -10,19 +10,19 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import java.util.List;
 
 /**
- * Automatically configures Spring Web MVC to register the UserContextInterceptor 
- * and CurrentUserArgumentResolver in any microservice that imports this module.
+ * Automatically configures Spring Web MVC to register the UserContextInterceptor and
+ * CurrentUserArgumentResolver in any microservice that imports this module.
  */
 @Configuration
 public class WebSecurityConfig implements WebMvcConfigurer {
 
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new UserContextInterceptor());
-    }
+  @Override
+  public void addInterceptors(InterceptorRegistry registry) {
+    registry.addInterceptor(new UserContextInterceptor());
+  }
 
-    @Override
-    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new CurrentUserArgumentResolver());
-    }
+  @Override
+  public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
+    resolvers.add(new CurrentUserArgumentResolver());
+  }
 }

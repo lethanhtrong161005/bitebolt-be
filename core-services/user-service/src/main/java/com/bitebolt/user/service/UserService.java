@@ -9,15 +9,15 @@ import java.util.UUID;
 
 public interface UserService {
 
-    User getUserById(UUID userId);
+  User getUserById(UUID userId);
 
-    User createUser(UUID userId, String fullName, String email, String avatar);
+  User createUser(UUID userId, String fullName, String email, String avatar);
 
-    Page<UserResponse> getAllUsers(Pageable pageable);
+  Page<UserResponse> getAllUsers(Pageable pageable);
 
-    UserResponse getUserProfile(UUID userId);
+  UserResponse getUserProfile(UUID userId);
 
-    UserResponse updateUser(UUID userId, UserUpdateRequest request);
+  UserResponse updateUser(UUID userId, UserUpdateRequest request);
 
-    void deleteUser(UUID userId);
+  void deleteUser(UUID userId);
 }

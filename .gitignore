@@ -86,7 +86,6 @@ kafkadata/
 zookeeperdata/
 
 # Ignore agents configuration directories
-.agentCoding/
 
 
 # Separate configuration repository

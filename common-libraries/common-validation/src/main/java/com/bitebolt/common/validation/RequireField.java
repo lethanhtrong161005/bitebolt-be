@@ -9,18 +9,19 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.lang.annotation.RetentionPolicy;
 
-
 @Documented
 @Constraint(validatedBy = RequireFieldValidator.class)
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RequireField {
 
-    String messageCode() default "";
+  String messageCode() default "";
 
-    I18nField i18n() default @I18nField;
+  I18nField i18n() default @I18nField;
 
-    String message() default "";
-    Class<?>[] groups() default {};
-    Class<? extends Payload>[] payload() default {};
+  String message() default "";
+
+  Class<?>[] groups() default {};
+
+  Class<? extends Payload>[] payload() default {};
 }

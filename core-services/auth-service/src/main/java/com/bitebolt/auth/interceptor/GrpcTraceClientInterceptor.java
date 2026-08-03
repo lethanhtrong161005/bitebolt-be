@@ -11,24 +11,23 @@ import java.util.UUID;
 @GrpcGlobalClientInterceptor
 public class GrpcTraceClientInterceptor implements ClientInterceptor {
 
-    @Override
-    public <ReqT, RespT> ClientCall<ReqT, RespT> interceptCall(
-            MethodDescriptor<ReqT, RespT> method,
-            CallOptions callOptions,
-            Channel next) {
+  @Override
+  public <ReqT, RespT> ClientCall<ReqT, RespT> interceptCall(
+      MethodDescriptor<ReqT, RespT> method, CallOptions callOptions, Channel next) {
 
-        return new ForwardingClientCall.SimpleForwardingClientCall<ReqT, RespT>(next.newCall(method, callOptions)) {
-            @Override
-            public void start(Listener<RespT> responseListener, Metadata headers) {
-                String traceId = MDC.get(GrpcTraceConstants.MDC_TRACE_ID_KEY);
-                if (traceId == null || traceId.isEmpty()) {
-                    traceId = UUID.randomUUID().toString();
-                    MDC.put(GrpcTraceConstants.MDC_TRACE_ID_KEY, traceId);
-                }
-                log.info("Propagating Trace ID: {} to gRPC server", traceId);
-                headers.put(GrpcTraceConstants.TRACE_ID_METADATA_KEY, traceId);
-                super.start(responseListener, headers);
-            }
-        };
-    }
+    return new ForwardingClientCall.SimpleForwardingClientCall<ReqT, RespT>(
+        next.newCall(method, callOptions)) {
+      @Override
+      public void start(Listener<RespT> responseListener, Metadata headers) {
+        String traceId = MDC.get(GrpcTraceConstants.MDC_TRACE_ID_KEY);
+        if (traceId == null || traceId.isEmpty()) {
+          traceId = UUID.randomUUID().toString();
+          MDC.put(GrpcTraceConstants.MDC_TRACE_ID_KEY, traceId);
+        }
+        log.info("Propagating Trace ID: {} to gRPC server", traceId);
+        headers.put(GrpcTraceConstants.TRACE_ID_METADATA_KEY, traceId);
+        super.start(responseListener, headers);
+      }
+    };
+  }
 }

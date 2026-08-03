@@ -4,7 +4,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 public interface SsoService {
 
-    String initiateEntraLogin();
+  String initiateEntraLogin();
 
-    String handleEntraCallback(String code, String state, HttpServletResponse httpResponse);
+  String handleEntraCallback(String code, String state, HttpServletResponse httpResponse);
 }

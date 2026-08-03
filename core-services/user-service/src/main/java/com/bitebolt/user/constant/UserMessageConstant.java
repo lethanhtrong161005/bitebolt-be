@@ -2,35 +2,55 @@ package com.bitebolt.user.constant;
 
 public final class UserMessageConstant {
 
-    private UserMessageConstant() {}
+  private UserMessageConstant() {}
 
-    /**
-     * VI: Người dùng không tồn tại.
-     * EN: User not found.
-     */
-    public static final String ERROR_USER_NOT_FOUND = "ERROR_USER_NOT_FOUND";
+  /**
+   *
+   *
+   * <ul>
+   *   <li>VI: Người dùng không tồn tại.
+   *   <li>EN: User not found.
+   * </ul>
+   */
+  public static final String ERROR_USER_NOT_FOUND = "ERROR_USER_NOT_FOUND";
 
-    /**
-     * VI: Lấy thông tin thành công.
-     * EN: Successfully fetched.
-     */
-    public static final String SUCCESS_FETCHED = "SUCCESS_FETCHED";
+  /**
+   *
+   *
+   * <ul>
+   *   <li>VI: Lấy thông tin thành công.
+   *   <li>EN: Successfully fetched.
+   * </ul>
+   */
+  public static final String SUCCESS_FETCHED = "SUCCESS_FETCHED";
 
-    /**
-     * VI: Cập nhật thành công.
-     * EN: Successfully updated.
-     */
-    public static final String SUCCESS_UPDATED = "SUCCESS_UPDATED";
+  /**
+   *
+   *
+   * <ul>
+   *   <li>VI: Cập nhật thành công.
+   *   <li>EN: Successfully updated.
+   * </ul>
+   */
+  public static final String SUCCESS_UPDATED = "SUCCESS_UPDATED";
 
-    /**
-     * VI: Xoá thành công.
-     * EN: Successfully deleted.
-     */
-    public static final String SUCCESS_DELETED = "SUCCESS_DELETED";
+  /**
+   *
+   *
+   * <ul>
+   *   <li>VI: Xóa thành công.
+   *   <li>EN: Successfully deleted.
+   * </ul>
+   */
+  public static final String SUCCESS_DELETED = "SUCCESS_DELETED";
 
-    /**
-     * VI: Tạo người dùng thất bại.
-     * EN: User creation failed.
-     */
-    public static final String ERROR_USER_CREATION_FAILED = "ERROR_USER_CREATION_FAILED";
+  /**
+   *
+   *
+   * <ul>
+   *   <li>VI: Tạo người dùng thất bại.
+   *   <li>EN: User creation failed.
+   * </ul>
+   */
+  public static final String ERROR_USER_CREATION_FAILED = "ERROR_USER_CREATION_FAILED";
 }
