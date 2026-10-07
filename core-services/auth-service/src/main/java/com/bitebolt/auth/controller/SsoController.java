@@ -41,4 +41,5 @@ public class SsoController {
     log.info("SSO authentication completed. Redirecting to landing page: {}", successRedirectUrl);
     response.sendRedirect(successRedirectUrl);
   }
+
 }
